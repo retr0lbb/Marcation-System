@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
+  "dependencies": {
+    "@marcation/server": "*",
+    "jest": "^29.7.0"
+  },
   "license": "ISC"
 }
