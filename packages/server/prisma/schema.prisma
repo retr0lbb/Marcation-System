@@ -11,8 +11,8 @@ datasource db {
 }
 
 model Marcation {
-  id                String   @id @unique @default(uuid())
-  clientName        String   @map("client_name")
-  MarcationDate     DateTime @map("marcation_date")
-  MarcationDuration DateTime @map("duration")
+  id                 String   @id @unique @default(uuid())
+  clientName         String   @map("client_name")
+  marcationStartDate DateTime @map("marcation_start_date")
+  marcationEndDate   DateTime @map("marcation_end_date")
 }
