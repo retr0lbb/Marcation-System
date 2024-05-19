@@ -5,15 +5,18 @@
   "main": "src/server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "migrate": "prisma migrate dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^5.14.0",
     "@types/node": "^20.12.12",
     "fastify": "^4.27.0",
     "prisma": "^5.14.0",
-    "tsx": "^4.10.3"
+    "tsx": "^4.10.3",
+    "zod": "^3.23.8"
   }
 }

@@ -12,5 +12,8 @@
   "workspaces": [
     "packages/server",
     "packages/client"
-  ]
+  ],
+  "dependencies": {
+    "prisma": "^5.14.0"
+  }
 }
