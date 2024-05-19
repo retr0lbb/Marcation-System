@@ -28,8 +28,8 @@ describe("create marcation tests", () => {
         prisma.marcation.findFirst = jest.fn().mockResolvedValue(null)
         prisma.marcation.create = jest.fn().mockResolvedValue({
             clientName: "Henrique Barbosa Sampaio",
-            marcationStartDate: "2024-05-20T22:30:00Z",
-            marcationEndDate: "2024-05-20T23:00:00Z",
+            marcationStartDate: "2024-05-20T22:30:00.000Z",
+            marcationEndDate: "2024-05-20T23:00:00.000Z",
             id: "5ec4424d-d4ff-43c0-8e1e-58a918998b1d"
         })
 
@@ -38,8 +38,8 @@ describe("create marcation tests", () => {
             url: "/",
             payload: {
                 clientName: "Henrique Barbosa Sampaio",
-                marcationStartDate: "2024-05-20T22:30:00Z",
-                marcationEndDate: "2024-05-20T23:00:00Z",
+                marcationStartDate: "2024-05-20T22:30:00.000Z",
+                marcationEndDate: "2024-05-20T23:00:00.000Z",
             }
         })
 
@@ -49,8 +49,8 @@ describe("create marcation tests", () => {
             marcation: {
                 id: "5ec4424d-d4ff-43c0-8e1e-58a918998b1d",
                 clientName: "Henrique Barbosa Sampaio",
-                marcationStartDate: "2024-05-20T22:30:00Z",
-                marcationEndDate: "2024-05-20T23:00:00Z"
+                marcationStartDate: "2024-05-20T22:30:00.000Z",
+                marcationEndDate: "2024-05-20T23:00:00.000Z"
             }
         })
         expect(prisma.marcation.create).toHaveBeenCalledWith({
