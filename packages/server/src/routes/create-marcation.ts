@@ -5,7 +5,7 @@ import { prisma } from "../utils/prisma";
 
 export async function createMarcationHandler(request: FastifyRequest, reply: FastifyReply){
     const bodyParams = z.object({
-        clientName: z.string(),
+        clientName: z.string({message: "invalid client name"}),
         marcationStartDate: z.string().datetime({
             message: "invalid datetime format"
         }),
@@ -64,7 +64,7 @@ export async function createMarcationHandler(request: FastifyRequest, reply: Fas
     })
 
 
-    return reply.status(200).send({message: "Marcation created with sucess", marcation: result})
+    return reply.status(200).send({message: "Marcation created with success", marcation: result})
 }
 
 
