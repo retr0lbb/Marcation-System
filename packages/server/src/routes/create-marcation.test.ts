@@ -1,6 +1,8 @@
-import fastify, { FastifyInstance } from "fastify";
-import { createMarcation } from "./create-marcation";
+
+import { createMarcationHandler } from "./create-marcation";
 import { prisma } from "../utils/prisma";
+import { FastifyReply, FastifyRequest } from "fastify";
+
 
 jest.mock("../utils/prisma", () => ({
     prisma: {
@@ -12,51 +14,46 @@ jest.mock("../utils/prisma", () => ({
   }));
 
 describe("create marcation tests", () => {
-    let app: FastifyInstance;
-
-    beforeAll(() => {
-        app = fastify()
-        createMarcation(app)
-    })
-
     beforeEach(()=> {
         jest.clearAllMocks();
     });
 
 
     it("should create a marcation", async () => {
-        const basePayload = {
+
+        prisma.marcation.findFirst = jest.fn().mockResolvedValue(null);
+        prisma.marcation.create = jest.fn().mockResolvedValue({
+            id: "5ec4424d-d4ff-43c0-8e1e-58a918998b1d",
             clientName: "Henrique Barbosa Sampaio",
             marcationStartDate: "2024-05-20T22:30:00.000Z",
-            marcationEndDate: "2024-05-20T23:00:00.000Z"
-        }
+            marcationEndDate: "2024-05-20T23:00:00.000Z",
+        });
 
-        prisma.marcation.findFirst = jest.fn().mockResolvedValue(null)
-        prisma.marcation.create = jest.fn().mockResolvedValue({
-            ...basePayload,
-            id: "5ec4424d-d4ff-43c0-8e1e-58a918998b1d"
-        })
+        const http = {
+            request: {
+              body: {
+                clientName: "Henrique Barbosa Sampaio",
+                marcationStartDate: "2024-05-20T22:30:00.000Z",
+                marcationEndDate: "2024-05-20T23:00:00.000Z",
+              }
+            } as unknown as FastifyRequest,
+            reply: {
+              status: jest.fn().mockReturnThis(),
+              send: jest.fn(),
+            } as unknown as FastifyReply,
+          };
 
-        const response = await app.inject({
-            method: "POST",
-            url: "/",
-            payload: {
-               ...basePayload
-            }
-        })
+        await createMarcationHandler(http.request, http.reply)
 
-        expect(response.statusCode).toBe(200)
-        expect(JSON.parse(response.body)).toEqual({
-            message: "Marcation created with sucess",
+        expect(http.reply.status).toHaveBeenCalledWith(200)
+        expect(http.reply.send).toHaveBeenCalledWith({
+            message: "Marcation created with success",
             marcation: {
-                id: "5ec4424d-d4ff-43c0-8e1e-58a918998b1d",
-                ...basePayload
-            }
-        })
-        expect(prisma.marcation.create).toHaveBeenCalledWith({
-            data: {
-                ...basePayload
-            }
-        })
+              id: "5ec4424d-d4ff-43c0-8e1e-58a918998b1d",
+              clientName: "Henrique Barbosa Sampaio",
+              marcationStartDate: "2024-05-20T22:30:00.000Z",
+              marcationEndDate: "2024-05-20T23:00:00.000Z",
+            },
+        });
     })
 })

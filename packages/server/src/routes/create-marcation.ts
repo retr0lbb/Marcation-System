@@ -67,6 +67,8 @@ export async function createMarcationHandler(request: FastifyRequest, reply: Fas
     return reply.status(200).send({message: "Marcation created with sucess", marcation: result})
 }
 
+
+//to fastify exporter
 export async function createMarcation(app: FastifyInstance){
-    app.post("/", createMarcationHandler )
+    app.post("/",createMarcationHandler)
 }
