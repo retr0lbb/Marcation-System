@@ -12,9 +12,9 @@ datasource db {
 
 model Marcation {
   id                 String    @id @unique @default(uuid())
-  clientName         String    @map("client_name")
-  marcationStartDate DateTime  @map("marcation_start_date")
-  marcationEndDate   DateTime  @map("marcation_end_date")
+  marcationDate      DateTime  @map("marcation_date")
+  expectMarcationEnd DateTime  @map("expect_marcation_end")
+  medicName          String
   Costumer           Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
   costumerId         String?
 }
