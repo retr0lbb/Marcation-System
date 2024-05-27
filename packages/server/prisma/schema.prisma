@@ -11,8 +11,19 @@ datasource db {
 }
 
 model Marcation {
-  id                 String   @id @unique @default(uuid())
-  clientName         String   @map("client_name")
-  marcationStartDate DateTime @map("marcation_start_date")
-  marcationEndDate   DateTime @map("marcation_end_date")
+  id                 String    @id @unique @default(uuid())
+  clientName         String    @map("client_name")
+  marcationStartDate DateTime  @map("marcation_start_date")
+  marcationEndDate   DateTime  @map("marcation_end_date")
+  Costumer           Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
+  costumerId         String?
+}
+
+model Costumer {
+  id           String      @id @unique @default(uuid())
+  name         String
+  email        String      @unique
+  contatcPhone String      @map("contact_phone")
+  motivation   String
+  Marcation    Marcation[]
 }
