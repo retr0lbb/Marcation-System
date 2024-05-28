@@ -19,13 +19,10 @@ export const schemas = {
 
 export async function createMarcationHandler(request: FastifyRequest, reply: FastifyReply){
 
-
     const { expectMarcationEnd, marcationDate, medicName } = schemas.RequisitionBodySchema.parse(request.body)
     const { costumerId } = schemas.RequisitionParamsSchema.parse(request.params)
-    
     const marcationDateTime = new Date(marcationDate)
     const exectedMarcationEndTime = new Date(expectMarcationEnd)
-
     const minGap = 30 * 60 * 1000;  //30 minutes in miliseconds
 
 
@@ -54,7 +51,6 @@ export async function createMarcationHandler(request: FastifyRequest, reply: Fas
     })
     
     if(hasAnyMarcationOnThisDate){
-        console.log(hasAnyMarcationOnThisDate)
         return reply.status(400).send({message: "Time conflict, Plese check the avaiables Times"})
     }
 
@@ -80,8 +76,6 @@ export async function createMarcationHandler(request: FastifyRequest, reply: Fas
     return reply.status(200).send({message: "Marcation created with success", marcation: result})
 }
 
-
-//to fastify exporter
 export async function createMarcation(app: FastifyInstance){
     app.post("/:costumerId/marcation",createMarcationHandler)
 }
