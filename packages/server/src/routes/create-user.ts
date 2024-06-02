@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 import { prisma } from "../utils/prisma";
 
-
 export async function CreateCostumerHandler(request: FastifyRequest, reply: FastifyReply){
     const bodySchema = z.object({
         name: z.string(),
@@ -13,8 +12,7 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
 
     const {contatcPhone, email, motivation, name} = bodySchema.parse(request.body)
 
-
-    const awaitForEmail = await prisma.costumer.findFirst({
+    const awaitForEmail = await prisma.patient.findFirst({
         where: {
             email: email
         }
@@ -24,7 +22,7 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
         return reply.status(400).send({message: "Some other user already have this email"})
     }
 
-    const results = await prisma.costumer.create({
+    const results = await prisma.patient.create({
         data: {
             contatcPhone,
             email,
@@ -34,7 +32,6 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
     })
 
     return reply.status(201).send({message: "Costumer created with success", results})
-
 }
 
 export async function CreateCostumer(app: FastifyInstance){

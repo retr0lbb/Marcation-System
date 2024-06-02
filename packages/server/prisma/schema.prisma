@@ -10,20 +10,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Marcation {
-  id                 String    @id @unique @default(uuid())
-  marcationDate      DateTime  @map("marcation_date")
-  expectMarcationEnd DateTime  @map("expect_marcation_end")
-  medicName          String
-  Costumer           Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
-  costumerId         String?
+model Medic {
+  id              String      @id @unique @default(uuid())
+  name            String
+  medicalFunction String      @map("medical_function")
+  especialization String
+  Marcation       Marcation[]
 }
 
-model Costumer {
+model Patient {
   id           String      @id @unique @default(uuid())
   name         String
   email        String      @unique
   contatcPhone String      @map("contact_phone")
   motivation   String
   Marcation    Marcation[]
+}
+
+model Marcation {
+  id                 String   @id @unique @default(uuid())
+  marcationDate      DateTime @map("marcation_date")
+  expectMarcationEnd DateTime @map("expect_marcation_end")
+
+  Medic   Medic?  @relation(fields: [medicId], references: [id])
+  medicId String?
+
+  Patient   Patient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId String?
 }

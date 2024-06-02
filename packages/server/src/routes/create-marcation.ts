@@ -8,19 +8,18 @@ export const schemas = {
     RequisitionBodySchema : z.object({
         marcationDate: z.string().datetime({message: "Invalid dateTime format"}),
         expectMarcationEnd: z.string().datetime({message: "Invalid dateTime fomat"}),
-        medicName: z.string()
     }),
 
     RequisitionParamsSchema : z.object({
-        costumerId: z.string().uuid()
+        patientId: z.string().uuid()
     })
 }
 
 
 export async function createMarcationHandler(request: FastifyRequest, reply: FastifyReply){
 
-    const { expectMarcationEnd, marcationDate, medicName } = schemas.RequisitionBodySchema.parse(request.body)
-    const { costumerId } = schemas.RequisitionParamsSchema.parse(request.params)
+    const { expectMarcationEnd, marcationDate } = schemas.RequisitionBodySchema.parse(request.body)
+    const { patientId } = schemas.RequisitionParamsSchema.parse(request.params)
     const marcationDateTime = new Date(marcationDate)
     const exectedMarcationEndTime = new Date(expectMarcationEnd)
     const minGap = 30 * 60 * 1000;  //30 minutes in miliseconds
@@ -54,9 +53,9 @@ export async function createMarcationHandler(request: FastifyRequest, reply: Fas
         return reply.status(400).send({message: "Time conflict, Plese check the avaiables Times"})
     }
 
-    const customer = await prisma.costumer.findUniqueOrThrow({
+    const customer = await prisma.patient.findUniqueOrThrow({
         where: {
-            id: costumerId
+            id: patientId
         }
     })
 
@@ -67,9 +66,8 @@ export async function createMarcationHandler(request: FastifyRequest, reply: Fas
      const result = await prisma.marcation.create({
         data: {
             marcationDate: marcationDateTime.toISOString(),
-            medicName: medicName,
             expectMarcationEnd: exectedMarcationEndTime,
-            costumerId: costumerId
+            patientId: patientId
         }
     })
 
@@ -77,5 +75,5 @@ export async function createMarcationHandler(request: FastifyRequest, reply: Fas
 }
 
 export async function createMarcation(app: FastifyInstance){
-    app.post("/:costumerId/marcation",createMarcationHandler)
+    app.post("/:patientId/marcation",createMarcationHandler)
 }

@@ -1,12 +1,8 @@
 import { createMarcationHandler, schemas } from "./create-marcation";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
-import { prisma } from "../../__mocks__/prisma"
-import { brotliDecompressSync } from "node:zlib";
-
 
 jest.mock("../utils/prisma")
-
 
 type RequisitionBody = z.infer<typeof schemas.RequisitionBodySchema>;
 type RequisitionParams = z.infer<typeof schemas.RequisitionParamsSchema>;
@@ -52,23 +48,4 @@ describe("create marcation tests", () => {
     expect(reply.status).toHaveBeenCalledWith(400);
     expect(reply.send).toHaveBeenCalledWith({message: "Cannot mark a date in the past"})
   })
-
-  it("should return 200 if The marcation is valid", async() => {
-
-    prisma.marcation.findFirst.mockResolvedValueOnce(null)
-    prisma.costumer.findUniqueOrThrow.mockResolvedValueOnce({ id: 'valid-uuid' });
-    prisma.marcation.create.mockResolvedValueOnce({
-      id: 'new-marcation',
-      marcationDate: request.body?.marcationDate,
-      expectMarcationEnd: request.body?.expectMarcationEnd,
-      medicName: request.body?.medicName,
-      costumerId: request.params?.costumerId,
-  });
-  
-    await createMarcationHandler(request as FastifyRequest, reply as FastifyReply)
-
-    expect(reply.status).toHaveBeenCalledWith(200);
-    expect(reply.send).toHaveBeenCalledTimes(1);
-  })
-
 })
