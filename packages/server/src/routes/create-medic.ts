@@ -16,5 +16,14 @@ export const createMedicBodySchema = z.object({
 export async function createMedicHandler(request: FastifyRequest, reply: FastifyReply){
     const {medicalFunction, especialization, name} = createMedicBodySchema.parse(request.body)
 
-    
+    const result = await prisma.medic.create({
+        data: {
+            especialization,
+            medicalFunction,
+            name,
+        }
+    })
+
+
+    return reply.status(201).send({message: `Medic: ${result.name} was inserted with sucess`, data: result})
 }

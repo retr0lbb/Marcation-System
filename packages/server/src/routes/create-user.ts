@@ -30,8 +30,7 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
             name
         }
     })
-
-    return reply.status(201).send({message: "Costumer created with success", results})
+    return reply.status(201).send({message: "Costumer created with success", data:results})
 }
 
 export async function CreateCostumer(app: FastifyInstance){

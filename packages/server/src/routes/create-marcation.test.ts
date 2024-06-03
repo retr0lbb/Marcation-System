@@ -1,4 +1,4 @@
-import { createMarcationHandler, schemas } from "./create-marcation";
+import { createMarcationHandler, schemas } from "./create-appoinment";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -14,19 +14,17 @@ let request: Partial<FastifyRequest<{
 let reply: Partial<FastifyReply>;
 
 
-
 describe("create marcation tests", () => {
-  
 
   beforeEach(() => {
     request = {
       body: {
         marcationDate: new Date(Date.now() + 3600000).toISOString(), // 1 hora no futuro
-        expectMarcationEnd: new Date(Date.now() + 7200000).toISOString(), // 2 horas no futuro
-        medicName: 'Dr. House'
+        expectMarcationEnd: new Date(Date.now() + 7200000).toISOString(), // 2 horas no futuro,
+        medicId: "0608ff42-2bda-42be-b8ad-b87e74890bdb"
       },
       params: {
-        costumerId: "b7aa0505-1b9a-4e76-aff6-3619005f3fb6"
+        patientId: "b7aa0505-1b9a-4e76-aff6-3619005f3fb6"
       }
     };
 
@@ -35,8 +33,6 @@ describe("create marcation tests", () => {
       send: jest.fn()
     }
   })
-
-
 
 
   it("should return 400 if marcationDate or expectMarcationEnd is in the past", async() => {
