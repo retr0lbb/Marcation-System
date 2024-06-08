@@ -7,10 +7,9 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
         name: z.string(),
         email: z.string().email(),
         contatcPhone: z.string(),
-        motivation: z.string()
     })
 
-    const {contatcPhone, email, motivation, name} = bodySchema.parse(request.body)
+    const {contatcPhone, email, name} = bodySchema.parse(request.body)
 
     const awaitForEmail = await prisma.patient.findFirst({
         where: {
@@ -26,8 +25,8 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
         data: {
             contatcPhone,
             email,
-            motivation,
             name
+            
         }
     })
     return reply.status(201).send({message: "Costumer created with success", data:results})

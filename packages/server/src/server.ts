@@ -1,7 +1,7 @@
 import fastify from "fastify"
-import { getMarcations } from "./routes/get-marcations"
-import { createMarcation } from "./routes/create-appoinment"
-import { CreateCostumer } from "./routes/create-user"
+import { getApointment } from "./routes/get-apponiments"
+import { createApointment } from "./routes/create-appoinment"
+import { CreateCostumer } from "./routes/create-patient"
 import createMedic from "./routes/create-medic"
 import createRole from "./routes/create-medic-role"
 const port = 3333
@@ -9,8 +9,8 @@ const app = fastify()
 
 
 
-app.register(getMarcations)
-app.register(createMarcation)
+app.register(getApointment)
+app.register(createApointment)
 app.register(CreateCostumer)
 app.register(createMedic)
 app.register(createRole)

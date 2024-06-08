@@ -31,11 +31,10 @@ export async function createMedicHandler(request: FastifyRequest, reply: Fastify
     const result = await prisma.medic.create({
         data: {
             especialization,
-            medicalFunction,
             name,
             medicRolesId: medicRoleId
         }
     })
-    
+
     return reply.status(201).send({message: `Medic: ${result.name} was inserted with sucess`, data: result})
 }

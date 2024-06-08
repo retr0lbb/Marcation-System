@@ -23,8 +23,8 @@ model Medic {
   name            String
   especialization String?
 
-  Marcation    Marcation[]
-  MedicRoles   MedicRoles? @relation(fields: [medicRolesId], references: [id])
+  Appointment  Appointment[]
+  MedicRoles   MedicRoles?   @relation(fields: [medicRolesId], references: [id])
   medicRolesId Int?
 }
 
@@ -33,15 +33,16 @@ model Patient {
   name         String
   email        String @unique
   contatcPhone String @map("contact_phone")
-  motivation   String
 
-  Marcation Marcation[]
+  Appointment Appointment[]
 }
 
-model Marcation {
-  id                 String   @id @unique @default(uuid())
-  marcationDate      DateTime @map("marcation_date")
-  expectMarcationEnd DateTime @map("expect_marcation_end")
+model Appointment {
+  id String @id @unique @default(uuid())
+
+  marcationDate       DateTime @map("marcation_date")
+  expectMarcationEnd  DateTime @map("expect_marcation_end")
+  finalRecomendations String?  @map("final_recomendations")
 
   Medic   Medic?  @relation(fields: [medicId], references: [id])
   medicId String?
