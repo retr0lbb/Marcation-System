@@ -8,13 +8,12 @@ export default async function createMedic(app: FastifyInstance){
 
 export const createMedicBodySchema = z.object({
     name: string(),
-    medicalFunction: string(),
     especialization: string(),
     medicRoleId: number().int().positive().nullable()
 })
 
 export async function createMedicHandler(request: FastifyRequest, reply: FastifyReply){
-    const {medicalFunction, especialization, name, medicRoleId} = createMedicBodySchema.parse(request.body)
+    const {especialization, name, medicRoleId} = createMedicBodySchema.parse(request.body)
 
     if(medicRoleId){
         const medicRole = await prisma.medicRoles.findUnique({

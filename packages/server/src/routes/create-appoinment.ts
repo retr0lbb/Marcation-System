@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { promise, z } from "zod";
+import { z } from "zod";
 import { prisma } from "../utils/prisma";
-import { promiseHooks } from "v8";
 
 export const schemas = {
     RequisitionBodySchema : z.object({
@@ -24,6 +23,24 @@ export async function createApointmentHandler(request: FastifyRequest, reply: Fa
 
     const { expectMarcationEnd, marcationDate, medicId } = schemas.RequisitionBodySchema.parse(request.body)
     const { patientId } = schemas.RequisitionParamsSchema.parse(request.params)
+
+    const [patient, medic] = await Promise.all([
+        prisma.patient.findUnique({
+            where: {
+                id: patientId
+            }
+        }),
+        
+        prisma.medic.findUnique({
+            where: {
+                id: medicId
+            }
+        })
+    ])
+
+    if (!patient || !medic){
+        return reply.status(404).send({message: "Patient Or medic not found"})
+    }
 
     const marcationDateTime = new Date(marcationDate)
     const exectedMarcationEndTime = new Date(expectMarcationEnd)
@@ -69,24 +86,6 @@ export async function createApointmentHandler(request: FastifyRequest, reply: Fa
     if(hasAnyMarcationOnThisDate.length > 0){
         console.log(hasAnyMarcationOnThisDate)
         return reply.status(400).send({message: "Time conflict, Plese check the avaiables Times"})
-    }
-
- const [patient, medic] = await Promise.all([
-        prisma.patient.findUniqueOrThrow({
-            where: {
-                id: patientId
-            }
-        }),
-        
-        prisma.medic.findUnique({
-            where: {
-                id: medicId
-            }
-        })
-    ])
-
-    if (!patient || !medic){
-        return reply.status(404).send({message: "Patient Or medic not found"})
     }
 
      const result = await prisma.appointment.create({
