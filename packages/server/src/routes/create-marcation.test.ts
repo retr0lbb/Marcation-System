@@ -19,8 +19,8 @@ describe("create marcation tests", () => {
   beforeEach(() => {
     request = {
       body: {
-        marcationDate: new Date(Date.now() + 3600000).toISOString(), // 1 hora no futuro
-        expectMarcationEnd: new Date(Date.now() + 7200000).toISOString(), // 2 horas no futuro,
+        marcationDate: new Date(Date.now() + 3600000).toISOString(),
+        expectMarcationEnd: new Date(Date.now() + 7200000).toISOString(),
         medicId: "0608ff42-2bda-42be-b8ad-b87e74890bdb"
       },
       params: {

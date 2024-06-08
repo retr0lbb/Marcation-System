@@ -10,21 +10,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model MedicRoles {
+  id    Int     @id @unique @default(autoincrement())
+  name  String  @unique
+  Medic Medic[]
+
+  @@map("medic_roles")
+}
+
 model Medic {
-  id              String      @id @unique @default(uuid())
+  id              String  @id @unique @default(uuid())
   name            String
-  medicalFunction String      @map("medical_function")
-  especialization String
-  Marcation       Marcation[]
+  especialization String?
+
+  Marcation    Marcation[]
+  MedicRoles   MedicRoles? @relation(fields: [medicRolesId], references: [id])
+  medicRolesId Int?
 }
 
 model Patient {
-  id           String      @id @unique @default(uuid())
+  id           String @id @unique @default(uuid())
   name         String
-  email        String      @unique
-  contatcPhone String      @map("contact_phone")
+  email        String @unique
+  contatcPhone String @map("contact_phone")
   motivation   String
-  Marcation    Marcation[]
+
+  Marcation Marcation[]
 }
 
 model Marcation {
