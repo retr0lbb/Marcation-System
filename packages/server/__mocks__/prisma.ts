@@ -1,8 +1,9 @@
 // __mocks__/prisma.ts
 export const prisma = {
-    marcation: {
+    appointment: {
         findFirst: jest.fn(),
         create: jest.fn(),
+        findMany: jest.fn()
     },
     costumer: {
         findUniqueOrThrow: jest.fn(),
