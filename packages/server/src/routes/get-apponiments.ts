@@ -54,6 +54,10 @@ export async function getApointmentHandler(request: FastifyRequest, reply: Fasti
             }
         })
 
+        if(marcations.length <= 0){
+            return reply.status(404).send({message: "No Appointments found"})
+        }
+
         const results = marcations.map((item, index) => {
             return{
                 patient_name: item.Patient?.name,
@@ -64,8 +68,6 @@ export async function getApointmentHandler(request: FastifyRequest, reply: Fasti
                 appointment_date: item.marcationDate
             }
         })
-
-        console.log(JSON.stringify(marcations[1]))
         return reply.status(200).send({results})
         
     } catch (error) {

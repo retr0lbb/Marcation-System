@@ -18,7 +18,7 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
     })
 
     if(awaitForEmail){
-        return reply.status(400).send({message: "Some other user already have this email"})
+        return reply.status(400).send({message: "Sorry other patient already used this email"})
     }
 
     const results = await prisma.patient.create({
