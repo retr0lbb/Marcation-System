@@ -27,15 +27,25 @@ describe("teste create patient", () => {
         reply.status = jest.fn().mockReturnThis();
         reply.send = jest.fn()
 
+        const mockReturn = prisma.patient.findFirst as jest.Mock;
 
-        const mockFindFirs = prisma.patient.findFirst as jest.Mock
+        mockReturn.mockResolvedValue([
+            {contatcPhone: "00000000", email: "a@gmail.com", name: "geraldo maligno memes"}
+        ])
 
-        mockFindFirs.mockRejectedValue([{ 
-            contatcPhone: "00000000", email: "a@gmail.com", name: "ungle grandpa"
-        }])
 
         await CreateCostumerHandler(request, reply)
         expect(reply.status).toHaveBeenCalledWith(400);
         expect(reply.send).toHaveBeenCalledWith({message: "Sorry other patient already used this email"})
+    });
+
+
+    it("Should create patient if everythign is ok", async() => {
+        const data = {contatcPhone: "123456789", email: "a@gmail.com", name: "jhon doe"}
+        request.body = data
+        reply.status = jest.fn().mockReturnThis();
+        reply.send = jest.fn()
+        await CreateCostumerHandler(request, reply)
+        expect(reply.status).toHaveBeenCalledWith(201);
     })
 })

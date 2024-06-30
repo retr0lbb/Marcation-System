@@ -17,7 +17,7 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
         }
     })
 
-    if(awaitForEmail){
+    if(awaitForEmail !== null){
         return reply.status(400).send({message: "Sorry other patient already used this email"})
     }
 
