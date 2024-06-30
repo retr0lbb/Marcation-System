@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 import { prisma } from "../utils/prisma";
+import ValidationError from "../_errors/validationError";
 
 export async function CreateCostumerHandler(request: FastifyRequest, reply: FastifyReply){
     const bodySchema = z.object({
@@ -9,11 +10,17 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
         contatcPhone: z.string(),
     })
 
-    const {contatcPhone, email, name} = bodySchema.parse(request.body)
+    const {success, data, error} = bodySchema.safeParse(request.body)
+
+    if(!success){
+        new ValidationError(error)
+        return reply.status(500).send({message: "Validation Error"})
+    }
+    
 
     const awaitForEmail = await prisma.patient.findFirst({
         where: {
-            email: email
+            email: data.email
         }
     })
 
@@ -23,9 +30,9 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
 
     const results = await prisma.patient.create({
         data: {
-            contatcPhone,
-            email,
-            name
+            contatcPhone: data?.contatcPhone,
+            email: data?.email,
+            name: data?.name
             
         }
     })
