@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { prisma } from "../utils/prisma";
+import { REPLServer } from "repl";
 
 export const schemas = {
     RequisitionBodySchema : z.object({
@@ -24,32 +25,50 @@ export async function createApointmentHandler(request: FastifyRequest, reply: Fa
     const { expectMarcationEnd, marcationDate, medicId } = schemas.RequisitionBodySchema.parse(request.body)
     const { patientId } = schemas.RequisitionParamsSchema.parse(request.params)
 
-    const [patient, medic] = await Promise.all([
-        prisma.patient.findUnique({
-            where: {
-                id: patientId
-            }
-        }),
-        
-        prisma.medic.findUnique({
-            where: {
-                id: medicId
-            }
-        })
-    ])
+    const marcationDateTime = new Date(marcationDate)
+    const exectedMarcationEndTime = new Date(expectMarcationEnd)
+    
+    if(marcationDateTime.getTime() < Date.now() || exectedMarcationEndTime.getTime() < Date.now()){
+        console.log("date in past")
+        return reply.status(400).send({message: "Cannot mark a date in the past"})
+    }
+
+    const [patient, medic] = await getMedicAndPatientDataAndReturn({medicId, patientId})
 
     if (!patient || !medic){
         return reply.status(404).send({message: "Patient Or medic not found"})
     }
 
-    const marcationDateTime = new Date(marcationDate)
-    const exectedMarcationEndTime = new Date(expectMarcationEnd)
     
-    if(marcationDateTime.getTime() < Date.now() || exectedMarcationEndTime.getTime() < Date.now()){
-        return reply.status(400).send({message: "Cannot mark a date in the past"})
+
+    const hasAnyMarcationOnThisDate = await findFirstAppointmentAndIfFindsReturnTrue({exectedMarcationEndTime, marcationDateTime, medicId, patientId})
+
+    if(hasAnyMarcationOnThisDate){
+        console.log("appointment")
+        return reply.status(400).send({message: "An other apointment is already on this date"})
+        
     }
 
-    const hasAnyMarcationOnThisDate = await prisma.appointment.findMany({
+     const result = await prisma.appointment.create({
+        data: {
+            marcationDate: marcationDateTime.toISOString(),
+            expectMarcationEnd: exectedMarcationEndTime.toISOString(),
+            patientId: patientId,
+            medicId: medicId
+        }
+    })
+
+    return reply.status(201).send({message: "Marcation created with success", marcation: result})
+}
+
+
+
+async function findFirstAppointmentAndIfFindsReturnTrue(
+    {medicId, patientId, marcationDateTime, exectedMarcationEndTime}: 
+    {medicId: string,patientId: string, marcationDateTime: Date, exectedMarcationEndTime: Date }
+    ): Promise<boolean>{
+
+    const result = await prisma.appointment.findMany({
         where: {
             medicId: medicId,
             patientId: patientId,
@@ -82,21 +101,29 @@ export async function createApointmentHandler(request: FastifyRequest, reply: Fa
             ],
         }
     })
-    
-    if(hasAnyMarcationOnThisDate.length > 0){
-        console.log(hasAnyMarcationOnThisDate)
-        return reply.status(400).send({message: "Time conflict, Plese check the avaiables Times"})
+
+    if(result.length <= 0){
+        return false
+    }else{
+        return true
     }
+}
 
-     const result = await prisma.appointment.create({
-        data: {
-            marcationDate: marcationDateTime.toISOString(),
-            expectMarcationEnd: exectedMarcationEndTime.toISOString(),
-            patientId: patientId,
-            medicId: medicId
-        }
-    })
-
-    return reply.status(200).send({message: "Marcation created with success", marcation: result})
+async function getMedicAndPatientDataAndReturn({medicId, patientId}: {patientId: string, medicId:string }){
+    const [patient, medic] = await Promise.all([
+        prisma.patient.findUnique({
+            where: {
+                id: patientId
+            }
+        }),
+        
+        prisma.medic.findUnique({
+            where: {
+                id: medicId
+            }
+        })
+    ])
+    
+    return [patient, medic]
 }
 
