@@ -35,5 +35,5 @@ export async function createMedicHandler(request: FastifyRequest, reply: Fastify
         }
     })
 
-    return reply.status(201).send({message: `Medic: ${result.name} was inserted with sucess`, data: result})
+    return reply.status(201).send({message: `Medic created with sucess`, data: result})
 }

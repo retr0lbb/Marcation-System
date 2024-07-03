@@ -12,6 +12,7 @@ jest.mock("../utils/prisma", ()=> ({
         }
     }
 }));
+
 import { FastifyReply, FastifyRequest } from "fastify";
 import { createApointmentHandler } from "./create-appoinment"
 import { prisma } from "../utils/prisma";
@@ -28,7 +29,6 @@ describe("CreateAppointments test case", () => {
             status: jest.fn().mockReturnThis()
         } as unknown as FastifyReply
     })
-
 
     it("should create appointment if everythis is alright", async() => {
         const todaysNow = new Date();

@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { prisma } from "../utils/prisma";
-import { REPLServer } from "repl";
 
 export const schemas = {
     RequisitionBodySchema : z.object({
@@ -39,14 +38,11 @@ export async function createApointmentHandler(request: FastifyRequest, reply: Fa
         return reply.status(404).send({message: "Patient Or medic not found"})
     }
 
-    
-
     const hasAnyMarcationOnThisDate = await findFirstAppointmentAndIfFindsReturnTrue({exectedMarcationEndTime, marcationDateTime, medicId, patientId})
 
     if(hasAnyMarcationOnThisDate){
         console.log("appointment")
         return reply.status(400).send({message: "An other apointment is already on this date"})
-        
     }
 
      const result = await prisma.appointment.create({
