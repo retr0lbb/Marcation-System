@@ -5,7 +5,8 @@ async function clearDb() {
         prisma.medic.deleteMany(),
         prisma.patient.deleteMany(),
         prisma.appointment.deleteMany(),
-        prisma.medicRoles.deleteMany(),
+        prisma.especiality.deleteMany(),
+        prisma.medicEspeciality.deleteMany()
     ])
     // future prisma things here
 

@@ -26,16 +26,16 @@ model User {
   password     String
   roleId       Int
 
-  Role    Role      @relation(fields: [roleId], references: [id])
-  Medic   Medic[]
-  Patient Patient[]
+  Role    Role     @relation(fields: [roleId], references: [id])
+  Medic   Medic?
+  Patient Patient?
 }
 
 model Medic {
   id        String  @id @unique @default(uuid())
   biography String?
   CRM       String  @unique
-  userId    String
+  userId    String  @unique
 
   user             User               @relation(fields: [userId], references: [id])
   Appointment      Appointment[]
@@ -46,7 +46,7 @@ model Medic {
 
 model Patient {
   id     String @id @unique @default(uuid())
-  userId String
+  userId String @unique
 
   user        User          @relation(fields: [userId], references: [id])
   Appointment Appointment[]
