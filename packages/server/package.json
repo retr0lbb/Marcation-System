@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "tsx watch src/server.ts",
-    "migrate": "prisma migrate dev"
+    "migrate": "prisma migrate dev",
+    "cleardb": "tsx src/utils/clear-db.ts"
   },
   "keywords": [],
   "author": "",
