@@ -1,44 +1,36 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import z from "zod";
+import {z} from "zod";
 import { prisma } from "../utils/prisma";
-import ValidationError from "../_errors/validationError";
+
+
+export default async function createCostumer(app: FastifyInstance){
+    app.post("/patient", CreateCostumerHandler)
+}
 
 export async function CreateCostumerHandler(request: FastifyRequest, reply: FastifyReply){
     const bodySchema = z.object({
-        name: z.string(),
-        email: z.string().email(),
-        contatcPhone: z.string(),
+        userId: z.string().uuid()
     })
-
-    const {success, data, error} = bodySchema.safeParse(request.body)
-
-    if(!success){
-        new ValidationError(error)
-        return reply.status(500).send({message: "Validation Error"})
-    }
+    const {userId} = bodySchema.parse(request.body)
     
-
-    const awaitForEmail = await prisma.patient.findFirst({
+    const user = await prisma.user.findUnique({
         where: {
-            email: data.email
+            id: userId
         }
     })
+    console.log(user)
 
-    if(awaitForEmail !== null){
-        return reply.status(400).send({message: "Sorry other patient already used this email"})
+    if(user == null){
+        return reply.status(404).send({message: "User not found"})
     }
 
-    const results = await prisma.patient.create({
+    await prisma.patient.create({
         data: {
-            contatcPhone: data?.contatcPhone,
-            email: data?.email,
-            name: data?.name
-            
+            id: userId,
+            userId: userId
         }
     })
-    return reply.status(201).send({message: "Costumer created with success", data:results})
+
+    return reply.status(200)
 }
 
-export async function CreateCostumer(app: FastifyInstance){
-    app.post("/patient", CreateCostumerHandler)
-}

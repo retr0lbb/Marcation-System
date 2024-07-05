@@ -32,7 +32,7 @@ model User {
 }
 
 model Medic {
-  id        String  @id @unique @default(uuid())
+  id        String  @id @unique
   biography String?
   CRM       String  @unique
   userId    String  @unique
@@ -42,14 +42,6 @@ model Medic {
   MedicEspeciality MedicEspeciality[]
 
   @@map("medics")
-}
-
-model Patient {
-  id     String @id @unique @default(uuid())
-  userId String @unique
-
-  user        User          @relation(fields: [userId], references: [id])
-  Appointment Appointment[]
 }
 
 model Especiality {
@@ -67,6 +59,14 @@ model MedicEspeciality {
   medic       Medic       @relation(fields: [medicId], references: [id])
 
   @@map("medic_especialities")
+}
+
+model Patient {
+  id     String @id @unique
+  userId String @unique
+
+  user        User          @relation(fields: [userId], references: [id])
+  Appointment Appointment[]
 }
 
 model Appointment {

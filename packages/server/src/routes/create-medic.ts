@@ -6,34 +6,54 @@ export default async function createMedic(app: FastifyInstance){
     app.post("/admin/medic", createMedicHandler)
 }
 
-export const createMedicBodySchema = z.object({
-    name: string(),
-    especialization: string(),
-    medicRoleId: number().int().positive().nullable()
-})
 
 export async function createMedicHandler(request: FastifyRequest, reply: FastifyReply){
-    const {especialization, name, medicRoleId} = createMedicBodySchema.parse(request.body)
+   const createMedicSchema = z.object({
+        userId: z.string(),
+        biography: z.string().nullable(),
+        CRM: z.string(),
+        medicEspecializationId: z.number().array().nullable()
+    })
 
-    if(medicRoleId){
-        const medicRole = await prisma.medicRoles.findUnique({
-            where: {
-                id: medicRoleId
-            }
-        })
+    const { CRM, biography, userId, medicEspecializationId } = createMedicSchema.parse(request.body)
 
-        if(!medicRole){
-            return reply.status(404).send({message: "medic role not found"})
-        }
-    }
+    //algoritimo para achar todas as especializações
 
-    const result = await prisma.medic.create({
-        data: {
-            especialization,
-            name,
-            medicRolesId: medicRoleId
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
         }
     })
 
-    return reply.status(201).send({message: `Medic created with sucess`, data: result})
+    if(user == null){
+        return reply.status(404).send({message: "User not found"})
+    }
+
+    const especialities = await prisma.especiality.findMany({
+        where: {
+            id: {
+                in: medicEspecializationId ?? []
+            }
+        }
+    })
+
+    if(medicEspecializationId && especialities.length !== medicEspecializationId.length){
+        return reply.status(400).send({ error: "Some specialities were not found" });
+    }
+
+    const medic = await prisma.medic.create({
+        data: {
+            CRM,
+            id: user.id,
+            biography: biography ?? "",
+            userId: user.id,
+            MedicEspeciality: {
+                create: especialities.map(especiality => ({
+                    especialityId: especiality.id
+                }))
+            }
+        }
+    })
+
+    return reply.status(201).send({message: "Medic inserted with sucess", data: medic})
 }
