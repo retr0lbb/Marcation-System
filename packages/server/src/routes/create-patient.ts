@@ -18,7 +18,6 @@ export async function CreateCostumerHandler(request: FastifyRequest, reply: Fast
             id: userId
         }
     })
-    console.log(user)
 
     if(user == null){
         return reply.status(404).send({message: "User not found"})
