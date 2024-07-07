@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { prisma } from "../utils/prisma";
+import { hashPassword } from "../utils/encrypt-pass";
 
 export default async function createUser(app: FastifyInstance) {
     app.post("/user", createUserHandler)
@@ -38,15 +39,17 @@ export async function createUserHandler(request: FastifyRequest, reply: FastifyR
         return reply.status(404).send({message: "Role not found"})
     }
 
+    const hashedPass = await hashPassword(password)
+
     const results = await prisma.user.create({
         data: {
             contactPhone,
             email,
             name,
-            password,
+            password: hashedPass,
             roleId
         }
     })
 
-    return reply.status(201).send({message: "User created with sucess"})
+    return reply.status(201).send({message: "User created with sucess", data: results})
 }

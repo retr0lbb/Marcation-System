@@ -6,11 +6,19 @@ import createRole from "./routes/create-role"
 import createMedic from "./routes/create-medic"
 import createUser from "./routes/create-user"
 import createMedicEspecialization from "./routes/create-medic-especialization"
+import logUserByEmail from "./routes/login-user"
+import fastifyWebToken from "@fastify/jwt"
+import { any } from "zod"
+
 const port = 3333
 const app = fastify()
 
 
 
+app.register(fastifyWebToken, {
+    secret: "My super secrete"
+})
+  
 app.register(getApointment)
 app.register(createApointment)
 app.register(createCostumer)
@@ -18,6 +26,7 @@ app.register(createMedic)
 app.register(createUser)
 app.register(createRole)
 app.register(createMedicEspecialization)
+app.register(logUserByEmail)
 
 app.listen({
     port: port,
