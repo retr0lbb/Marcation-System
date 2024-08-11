@@ -8,15 +8,38 @@ import createUser from "./routes/create-user"
 import createMedicEspecialization from "./routes/create-medic-especialization"
 import logUserByEmail from "./routes/login-user"
 import fastifyWebToken from "@fastify/jwt"
-import { any } from "zod"
+import { 
+    serializerCompiler, 
+    validatorCompiler,
+    jsonSchemaTransform,
+    createJsonSchemaTransform,
+    ZodTypeProvider
+} from "fastify-type-provider-zod"
+import {fastifySwagger} from "@fastify/swagger"
+import {fastifySwaggerUi} from "@fastify/swagger-ui"
 
 const port = 3333
 const app = fastify()
 
 
-
 app.register(fastifyWebToken, {
     secret: "My super secrete"
+})
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
+app.register(fastifySwagger, {
+    openapi:{
+        info:{
+            title: "Marcation",
+            description: "A simple solution for marking appointment",
+            version: "1.0.0"
+        },
+        servers: [],
+    },
+    transform: jsonSchemaTransform
+})
+app.register(fastifySwaggerUi, {
+    routePrefix: "/docs"
 })
   
 app.register(getApointment)
