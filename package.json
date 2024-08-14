@@ -10,13 +10,13 @@
   "license": "ISC",
   "description": "",
   "workspaces": [
-    "packages/server",
-    "packages/client"
+    "./apps/*"
   ],
   "dependencies": {
     "@types/fastify-jwt": "^0.8.1",
     "fastify-type-provider-zod": "^2.0.0",
-    "prisma": "^5.14.0"
+    "prisma": "^5.14.0",
+    "turborepo": "^0.0.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
